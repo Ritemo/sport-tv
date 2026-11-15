@@ -93,6 +93,15 @@ def est_sport(categories, titre, sous_titre, chaine_sport):
     return contient(titre + " " + sous_titre, ["football", "rugby", "handball", "basket", "tennis", "cyclisme", "biathlon", "formule 1", "ligue des champions", "ligue 1", "top 14", "jeux olympiques", "tour de france", "roland-garros", "six nations", "motogp"])
 
 
+def affiche(titre, sous_titre):
+    """'Football : Ligue 1 | PSG / OM' -> titre 'PSG / OM', sous-titre 'Ligue 1'."""
+    if " | " not in titre:
+        return titre, sous_titre
+    avant, apres = titre.split(" | ", 1)
+    competition = avant.split(" : ", 1)[1] if " : " in avant else avant
+    return apres.strip(), " · ".join(x for x in (competition.strip(), sous_titre) if x)
+
+
 def date_xmltv(txt):
     """'20261115201000 +0100' -> secondes depuis 1970 (UTC)."""
     txt = (txt or "").strip()
@@ -180,6 +189,7 @@ def analyser(flux, maintenant=None):
                         if direct and contient(t + " " + s, ["differe", "rediffusion"]):
                             direct = False
                         magazine = (contient(cats, MOTS_MAGAZINE) or contient(t, TITRES_MAGAZINE)) and not contient(cats, ["match", "retransmission"])
+                        titre, st = affiche(titre, st)
                         p = {"c": cid, "d": debut, "f": fin, "t": titre,
                              "sp": discipline(cats, t, s, sans_accents(desc))}
                         if st:

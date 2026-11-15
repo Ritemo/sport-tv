@@ -46,6 +46,10 @@ class TestRobot(unittest.TestCase):
         ids = [c["id"] for c in self.res["chaines"]]
         self.assertEqual(ids, ["TF1.fr", "LEquipe21.fr", "beINSPORTS1.fr"])
 
+    def test_affiche(self):
+        self.assertEqual(P.affiche("Football : Ligue 1 | PSG / OM", ""), ("PSG / OM", "Ligue 1"))
+        self.assertEqual(P.affiche("Top 14", "Demi-finale"), ("Top 14", "Demi-finale"))
+
     def test_mot_entier(self):
         self.assertFalse(P.contient("f12 rapport", ["f1"]))
         self.assertTrue(P.contient("gp de f1 a monaco", ["f1"]))
