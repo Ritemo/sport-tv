@@ -39,6 +39,8 @@ class TestRobot(unittest.TestCase):
         self.assertEqual(self.titres["Handball : Montpellier / PSG"].get("live"), 1)
         self.assertEqual(self.titres["Top 14 : Toulouse / Clermont"].get("redif"), 1)
         self.assertEqual(self.titres["L'Équipe du soir"].get("mag"), 1)
+        self.assertIsNone(self.titres["L'Équipe du soir"].get("ev"))
+        self.assertEqual(self.titres["Football : France / Espagne"].get("ev"), 1)
 
     def test_chaines_dans_l_ordre(self):
         ids = [c["id"] for c in self.res["chaines"]]

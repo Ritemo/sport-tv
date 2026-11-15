@@ -141,7 +141,7 @@ function ecrire(cle, v){ try{ localStorage.setItem("sporttv-"+cle, JSON.stringif
 let D = {chaines:[], programmes:[]}, META = null;
 let mesSports = lire("sports", null);      // null = jamais réglé : tout afficher
 let sansChaines = new Set(lire("sansChaines", []));
-let opts = lire("opts", {live:false, mag:false, redif:false});
+let opts = lire("opts", {ev:false, redif:false});
 let jourChoisi = 0, sportFocus = null, texteRech = "";
 const $ = id => document.getElementById(id);
 const nomChaine = {}, logoChaine = {};
@@ -162,7 +162,7 @@ function filtrer(){
     if (p.f <= maintenant) return false;
     if (!actifs.has(p.sp) || sansChaines.has(p.c)) return false;
     if (sportFocus && p.sp !== sportFocus) return false;
-    if (opts.live && !p.live) return false;
+    if (opts.ev && !p.ev) return false;
     if (opts.mag && p.mag) return false;
     if (opts.redif && p.redif) return false;
     if (q && !norm(p.t+" "+(p.st||"")+" "+(p.ds||"")+" "+nomChaine[p.c]).includes(q)) return false;
@@ -206,7 +206,7 @@ function afficher(){
   const actifs = sportsActifs();
   $("sports").innerHTML = actifs.length > 1 ? `<button class="puce${!sportFocus ? " actif" : ""}" data-s="">Tous</button>`
     + actifs.map(s => `<button class="puce${sportFocus === s ? " actif" : ""}" data-s="${esc(s)}">${EMOJI[s]} ${esc(s)}</button>`).join("") : "";
-  $("bascules").innerHTML = [["live","Directs"],["mag","Sans magazines"],["redif","Sans rediffs"]]
+  $("bascules").innerHTML = [["ev","Matchs et courses"],["redif","Sans rediffs"]]
     .map(([k, l]) => `<button class="bascule${opts[k] ? " actif" : ""}" data-o="${k}">${l}</button>`).join("");
   // Liste
   let html = "";

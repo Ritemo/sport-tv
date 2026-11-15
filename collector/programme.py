@@ -29,7 +29,7 @@ SPORTS = [
     ("Rugby", ["rugby", "top 14", "pro d2", "six nations", "6 nations", "champions cup", "challenge cup", "xv de france", "super rugby"]),
     ("Basket", ["basket", "nba", "betclic elite", "euroligue", "euroleague", "wnba", "eurocup"]),
     ("Volley", ["volley", "beach-volley"]),
-    ("Tennis", ["tennis", "atp", "wta", "roland-garros", "roland garros", "wimbledon", "open d'australie", "coupe davis", "billie jean king", "masters 1000"]),
+    ("Tennis", ["tennis", "atp", "wta", "roland-garros", "roland garros", "wimbledon", "open d'australie", "coupe davis", "billie jean king", "masters 1000", "padel"]),
     ("Cyclisme", ["cyclisme", "tour de france", "giro", "vuelta", "paris-roubaix", "cyclo-cross", "cyclocross", "vtt", "criterium du dauphine", "paris-nice", "milan-san remo", "tour des flandres", "liege-bastogne"]),
     ("Équitation", ["equitation", "hippisme", "course hippique", "courses hippiques", "turf", "trot", "galop", "pmu", "jumping", "dressage"]),
     ("Sports mécaniques", ["formule 1", "formula 1", "f1", "grand prix", "motogp", "moto gp", "rallye", "wrc", "nascar", "indycar", "endurance", "24 heures du mans", "superbike", "formule e", "dakar", "motocross", "supercross", "karting", "sport auto", "sports mecaniques"]),
@@ -38,7 +38,7 @@ SPORTS = [
     ("Hockey", ["hockey sur glace", "nhl", "ligue magnus", "hockey"]),
     ("Sports US", ["nfl", "football americain", "super bowl", "mlb", "baseball"]),
     ("Combat", ["boxe", "mma", "ufc", "pfl", "judo", "karate", "taekwondo", "lutte", "kickboxing", "muay thai", "catch", "wwe", "escrime"]),
-    ("Athlétisme", ["athletisme", "marathon", "diamond league", "trail", "decathlon", "cross-country"]),
+    ("Athlétisme", ["athletisme", "marathon", "diamond league", "trail", "decathlon", "cross-country", "triathlon"]),
     ("Natation", ["natation", "plongeon", "water-polo", "water polo", "nage"]),
     ("Sports nautiques", ["voile", "vendee globe", "route du rhum", "surf", "aviron", "canoe", "kayak"]),
     ("Fléchettes et billard", ["flechettes", "darts", "snooker", "billard", "petanque"]),
@@ -51,6 +51,8 @@ AUTRE = "Autres sports"
 MOTS_SPORT = ["sport", "match", "championnat", "coupe", "tournoi", "grand prix", "jeux olympiques", "jeux paralympiques", "finale", "demi-finale", "etape"]
 MOTS_PAS_SPORT = ["film", "serie", "telefilm", "jeunesse", "dessin anime", "documentaire animalier", "telerealite", "jeu", "meteo", "feuilleton", "programme indetermine", "fin des programmes"]
 MOTS_MAGAZINE = ["magazine", "debat", "talk", "journal", "info", "plateau", "emission", "actualite", "information", "late show", "reportage", "documentaire", "resume", "best of", "zapping"]
+TITRES_MAGAZINE = ["mag", "magazine", "jt", "journal", "matinale", "club", "l'equipe du soir", "l'equipe de greg", "stade 2", "tout le sport", "telefoot", "l'essentiel", "debrief", "quotidienne", "late football club", "after foot", "zapsport", "le match dans le match", "c'est de la balle", "intergalactique", "reportage", "portrait", "les grands matchs", "resume", "highlights", "best of"]
+MOTS_EVENEMENT = ["retransmission", "en direct", "diffusion d'un match", "match", "course", "manche", "etape", "grand prix", "finale", "demi-finale", "slalom", "sprint", "poursuite", "combat", "journee", "tournoi", "qualifications", "essais", "qualifs", "rencontre", "affronte", "recoit", "se deplace", "championnat du monde", "coupe du monde"]
 MOTS_DIRECT = ["en direct", "direct", "live"]
 MOTS_REDIF = ["rediffusion", "redif", "differe", "replay", "multidiffusion", "en integralite"]
 
@@ -104,8 +106,17 @@ def date_xmltv(txt):
     return int(d.replace(tzinfo=timezone.utc).timestamp()) - minutes * 60
 
 
+CHAINES = set(CONFIG["chaines_tnt"]) | set(CONFIG["chaines_sport"])
+
+
 def chaine_exclue(cid):
-    return any(re.search(m, cid) for m in CONFIG["chaines_exclues_motifs"])
+    """Seules les chaînes listées dans config.json sont gardées."""
+    return cid not in CHAINES
+
+
+def remplissage(titre):
+    """Écrans d'attente des chaînes événementielles, pubs maison, etc."""
+    return any(re.search(m, titre) for m in CONFIG["titres_remplissage"])
 
 
 def telecharger():
@@ -158,7 +169,7 @@ def analyser(flux, maintenant=None):
                 desc = texte(el, "desc")
                 cats = sans_accents(" | ".join((c.text or "") for c in el.findall("category")))
                 t, s = sans_accents(titre), sans_accents(st)
-                if est_sport(cats, t, s, cid in sport_ids):
+                if not remplissage(t) and est_sport(cats, t, s, cid in sport_ids):
                     cle = (cid, debut)
                     if cle not in vus:
                         vus.add(cle)
@@ -168,7 +179,7 @@ def analyser(flux, maintenant=None):
                         redif = el.find("previously-shown") is not None or contient(t + " " + s, MOTS_REDIF)
                         if direct and contient(t + " " + s, ["differe", "rediffusion"]):
                             direct = False
-                        magazine = contient(cats, MOTS_MAGAZINE) and not contient(cats, ["match", "retransmission"])
+                        magazine = (contient(cats, MOTS_MAGAZINE) or contient(t, TITRES_MAGAZINE)) and not contient(cats, ["match", "retransmission"])
                         p = {"c": cid, "d": debut, "f": fin, "t": titre,
                              "sp": discipline(cats, t, s, sans_accents(desc))}
                         if st:
@@ -181,6 +192,9 @@ def analyser(flux, maintenant=None):
                             p["redif"] = 1
                         if magazine:
                             p["mag"] = 1
+                        # Événement : un match, une course, une étape... (pas un magazine)
+                        elif direct or " / " in titre or contient(tout, MOTS_EVENEMENT):
+                            p["ev"] = 1
                         progs.append(p)
             el.clear()
     utilisees = {p["c"] for p in progs}
