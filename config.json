@@ -52,6 +52,7 @@
     "documentaire"
   ],
   "garder_magazines": false,
+  "garder_rediffusions": false,
   "chaines_generalistes": [
     "TF1.fr",
     "France2.fr",
