@@ -1,0 +1,29 @@
+{
+ "maj": 1794735224,
+ "source": "https://xmltvfr.fr/xmltv/xmltv.xml.gz",
+ "programmes": 9875,
+ "chaines": 200,
+ "par_sport": {
+  "Autres sports": 5467,
+  "Football": 2097,
+  "Sports mécaniques": 439,
+  "Basket": 298,
+  "Sports d'hiver": 296,
+  "Tennis": 218,
+  "Équitation": 184,
+  "Fléchettes et billard": 129,
+  "Combat": 126,
+  "Rugby": 123,
+  "Golf": 112,
+  "Sports nautiques": 95,
+  "Cyclisme": 79,
+  "Handball": 74,
+  "Sports US": 71,
+  "Athlétisme": 27,
+  "Volley": 23,
+  "Hockey": 12,
+  "Natation": 3,
+  "Gymnastique": 2
+ },
+ "duree_s": 37
+}
