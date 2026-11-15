@@ -51,7 +51,7 @@ AUTRE = "Autres sports"
 MOTS_SPORT = ["sport", "match", "championnat", "coupe", "tournoi", "grand prix", "jeux olympiques", "jeux paralympiques", "finale", "demi-finale", "etape"]
 MOTS_PAS_SPORT = ["film", "serie", "telefilm", "jeunesse", "dessin anime", "documentaire animalier", "telerealite", "jeu", "meteo", "feuilleton", "programme indetermine", "fin des programmes"]
 MOTS_MAGAZINE = ["magazine", "debat", "talk", "journal", "info", "plateau", "emission", "actualite", "information", "late show", "reportage", "documentaire", "resume", "best of", "zapping"]
-TITRES_MAGAZINE = ["mag", "magazine", "jt", "journal", "matinale", "club", "l'equipe du soir", "l'equipe de greg", "stade 2", "tout le sport", "telefoot", "l'essentiel", "debrief", "quotidienne", "late football club", "after foot", "zapsport", "le match dans le match", "c'est de la balle", "intergalactique", "reportage", "portrait", "les grands matchs", "resume", "highlights", "best of"]
+TITRES_MAGAZINE = ["mag", "magazine", "jt", "journal", "matinale", "club", "l'equipe du soir", "l'equipe de greg", "stade 2", "tout le sport", "telefoot", "l'essentiel", "debrief", "quotidienne", "late football club", "after foot", "zapsport", "le match dans le match", "c'est de la balle", "intergalactique", "reportage", "portrait", "les grands matchs", "resume", "highlights", "best of", "on board", "lundi grand prix", "documentaire", "serie documentaire"]
 MOTS_EVENEMENT = ["retransmission", "en direct", "diffusion d'un match", "match", "course", "manche", "etape", "grand prix", "finale", "demi-finale", "slalom", "sprint", "poursuite", "combat", "journee", "tournoi", "qualifications", "essais", "qualifs", "rencontre", "affronte", "recoit", "se deplace", "championnat du monde", "coupe du monde"]
 MOTS_DIRECT = ["en direct", "direct", "live"]
 MOTS_REDIF = ["rediffusion", "redif", "differe", "replay", "multidiffusion", "en integralite"]
@@ -188,7 +188,7 @@ def analyser(flux, maintenant=None):
                         redif = el.find("previously-shown") is not None or contient(t + " " + s, MOTS_REDIF)
                         if direct and contient(t + " " + s, ["differe", "rediffusion"]):
                             direct = False
-                        magazine = (contient(cats, MOTS_MAGAZINE) or contient(t, TITRES_MAGAZINE)) and not contient(cats, ["match", "retransmission"])
+                        magazine = (contient(cats, MOTS_MAGAZINE) or contient(t + " " + s, TITRES_MAGAZINE) or re.search(r"saison \d", t)) and not contient(cats, ["match", "retransmission"])
                         sport = discipline(cats, t, s, sans_accents(desc))
                         if sport not in CONFIG["sports_gardes"] or contient(cats + " " + t + " " + s, CONFIG["mots_exclus"]):
                             el.clear()

@@ -33,6 +33,7 @@ class TestRobot(unittest.TestCase):
         self.assertNotIn("Golf : DP World Tour", self.titres)
         self.assertNotIn("MotoGP : Grand Prix de Valence", self.titres)
         self.assertNotIn("L'Équipe du soir", self.titres)
+        self.assertNotIn("La Premier League sur Canal+", self.titres)
 
     def test_disciplines(self):
         self.assertEqual(self.titres["Football : France / Espagne"]["sp"], "Football")
