@@ -22,3 +22,4 @@ Programme TV du sport en France, sans pub, filtré sur mes sports et chaînes. R
 
 - Le robot (`collector/programme.py`) est sans dépendance : garder ça. Réglages dans `config.json`. Tests : `python -m unittest discover tests`.
 - Je consulte l'appli surtout sur téléphone : vérifier d'abord au format 390 x 844.
+- Pas de notification ntfy pour cette appli (ni alerte ni autre).
