@@ -29,6 +29,11 @@ class TestRobot(unittest.TestCase):
         self.assertNotIn("Football trop loin", self.titres)  # au-delà de 8 jours
         self.assertNotIn("Doublon", self.titres)             # même chaîne, même heure
 
+    def test_sports_et_magazines_ecartes(self):
+        self.assertNotIn("Golf : DP World Tour", self.titres)
+        self.assertNotIn("MotoGP : Grand Prix de Valence", self.titres)
+        self.assertNotIn("L'Équipe du soir", self.titres)
+
     def test_disciplines(self):
         self.assertEqual(self.titres["Football : France / Espagne"]["sp"], "Football")
         self.assertEqual(self.titres["Handball : Montpellier / PSG"]["sp"], "Handball")
@@ -38,8 +43,6 @@ class TestRobot(unittest.TestCase):
     def test_reperes(self):
         self.assertEqual(self.titres["Handball : Montpellier / PSG"].get("live"), 1)
         self.assertEqual(self.titres["Top 14 : Toulouse / Clermont"].get("redif"), 1)
-        self.assertEqual(self.titres["L'Équipe du soir"].get("mag"), 1)
-        self.assertIsNone(self.titres["L'Équipe du soir"].get("ev"))
         self.assertEqual(self.titres["Football : France / Espagne"].get("ev"), 1)
 
     def test_chaines_dans_l_ordre(self):

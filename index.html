@@ -57,9 +57,10 @@ h2::after{content:"";flex:1;height:1px;background:var(--trait)}
 .disc{font-weight:600;color:var(--vert2)}
 .titre{font-weight:700;font-size:15.5px;line-height:1.25}
 .st{color:var(--doux);font-size:13.5px;margin-top:2px}
-.chaine{display:inline-flex;align-items:center;gap:6px;margin-top:7px;font-size:12.5px;font-weight:600;background:#f0eee6;border-radius:6px;padding:3px 8px 3px 4px}
+.chaine{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:800;color:#fff;background:var(--vert);border-radius:6px;padding:3px 8px 3px 5px;white-space:nowrap}
 .chaine img{width:22px;height:16px;object-fit:contain}
-.chaine i{width:6px;height:6px;border-radius:50%;background:var(--doux);margin-left:3px}
+.chaine i{display:none}
+.haut{flex-wrap:wrap}
 .badge{font-size:10.5px;font-weight:800;letter-spacing:.5px;padding:2px 6px;border-radius:4px;text-transform:uppercase}
 .b-live{background:var(--rouge);color:#fff}
 .b-redif{background:#ece6d6;color:var(--ambre)}
@@ -132,7 +133,6 @@ h2::after{content:"";flex:1;height:1px;background:var(--trait)}
 <script>
 const EMOJI = {"Football":"⚽","Rugby":"🏉","Handball":"🤾","Basket":"🏀","Volley":"🏐","Tennis":"🎾","Cyclisme":"🚴","Sports mécaniques":"🏎️","Golf":"⛳","Sports d'hiver":"⛷️","Hockey":"🏒","Sports US":"🏈","Combat":"🥊","Athlétisme":"🏃","Natation":"🏊","Sports nautiques":"⛵","Équitation":"🏇","Fléchettes et billard":"🎯","Gymnastique":"🤸","Autres sports":"🏅"};
 const TNT = ["TF1.fr","France2.fr","France3.fr","France4.fr","France5.fr","M6.fr","Arte.fr","W9.fr","TMC.fr","TFX.fr","LEquipe21.fr","RMCDecouverte.fr","RMCStory.fr","6ter.fr","CStar.fr","Gulli.fr","NRJ12.fr","C8.fr","CNews.fr","Cherie25.fr","TF1SeriesFilms.fr","LCP.fr","BFMTV.fr","FranceInfo.fr","T18.fr","NOVO19.fr"];
-const JOURS = ["dim.","lun.","mar.","mer.","jeu.","ven.","sam."];
 
 // Préférences gardées sur le téléphone (localStorage peut être indisponible)
 function lire(cle, defaut){ try{ const v = localStorage.getItem("sporttv-"+cle); return v ? JSON.parse(v) : defaut; }catch(e){ return defaut; } }
@@ -146,8 +146,13 @@ let jourChoisi = 0, sportFocus = null, texteRech = "";
 const $ = id => document.getElementById(id);
 const nomChaine = {}, logoChaine = {};
 
-function debutJour(decalage){ const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+decalage); return d.getTime()/1000; }
-function hhmm(s){ const d = new Date(s*1000); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
+// Toujours l'heure de Paris, quel que soit le réglage du téléphone
+const FMT = new Intl.DateTimeFormat("fr-FR", {timeZone:"Europe/Paris", year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", weekday:"short", hourCycle:"h23"});
+function paris(s){ const o = {}; FMT.formatToParts(new Date(s*1000)).forEach(x => o[x.type] = x.value); return o; }
+function cleJour(s){ const o = paris(s); return o.year+o.month+o.day; }
+function midiParis(i){ const n = Date.now()/1000, o = paris(n); return n - (+o.hour*3600 + +o.minute*60) + 12*3600 + i*86400; }
+function hhmm(s){ const o = paris(s); return o.hour+":"+o.minute; }
+function jourCourt(s){ const o = paris(s); return o.weekday+" "+(+o.day); }
 function duree(p){ const m = Math.round((p.f-p.d)/60); return m >= 60 ? Math.floor(m/60)+" h "+(m%60 ? String(m%60).padStart(2,"0") : "") : m+" min"; }
 function norm(t){ return (t||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase(); }
 function esc(t){ return (t||"").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
@@ -155,10 +160,10 @@ function tousSports(){ const s = new Set(D.programmes.map(p => p.sp)); return Ob
 function sportsActifs(){ return mesSports ? tousSports().filter(s => mesSports.includes(s)) : tousSports(); }
 
 function filtrer(){
-  const maintenant = Date.now()/1000, a = debutJour(jourChoisi), b = debutJour(jourChoisi+1);
+  const maintenant = Date.now()/1000, cible = cleJour(midiParis(jourChoisi));
   const actifs = new Set(sportsActifs()), q = norm(texteRech);
   return D.programmes.filter(p => {
-    if (!q && (p.d < a || p.d >= b)) return false;
+    if (!q && cleJour(p.d) !== cible) return false;
     if (p.f <= maintenant) return false;
     if (!actifs.has(p.sp) || sansChaines.has(p.c)) return false;
     if (sportFocus && p.sp !== sportFocus) return false;
@@ -178,28 +183,26 @@ function carte(p, maintenant){
     + (p.redif ? '<span class="badge b-redif">Rediff</span>' : "")
     + (p.mag ? '<span class="badge b-mag">Magazine</span>' : "");
   const logo = logoChaine[p.c] ? `<img src="${esc(logoChaine[p.c])}" alt="" loading="lazy" onerror="this.remove()">` : "<i></i>";
-  const jour = texteRech ? `<span>${JOURS[new Date(p.d*1000).getDay()]} ${new Date(p.d*1000).getDate()}</span>` : `<span>${duree(p)}</span>`;
+  const jour = texteRech ? `<span>${jourCourt(p.d)}</span>` : `<span>${duree(p)}</span>`;
   return `<button class="prog${enCours ? " encours" : ""}">
     <div class="heure"><b>${hhmm(p.d)}</b>${jour}</div>
     <div class="corps">
-      <div class="haut"><span class="disc">${EMOJI[p.sp]||"🏅"} ${esc(p.sp)}</span>${badges}</div>
+      <div class="haut"><span class="chaine">${logo}${esc(nomChaine[p.c]||p.c)}</span><span class="disc">${EMOJI[p.sp]||"🏅"} ${esc(p.sp)}</span>${badges}</div>
       <div class="titre">${esc(p.t)}</div>
       ${p.st ? `<div class="st">${esc(p.st)}</div>` : ""}
-      <span class="chaine">${logo}${esc(nomChaine[p.c]||p.c)}</span>
       ${p.ds ? `<div class="desc">${esc(p.ds)}</div>` : ""}
     </div>
     ${enCours ? `<div class="barre" style="width:${pct}%"></div>` : ""}
   </button>`;
 }
 
-function moment(s){ const h = new Date(s*1000).getHours(); return h < 6 ? "Nuit" : h < 12 ? "Matin" : h < 18 ? "Après-midi" : "Soirée"; }
+function moment(s){ const h = +paris(s).hour; return h < 6 ? "Nuit" : h < 12 ? "Matin" : h < 18 ? "Après-midi" : "Soirée"; }
 
 function afficher(){
   const maintenant = Date.now()/1000, liste = filtrer();
   // Jours
   $("jours").innerHTML = Array.from({length:8}, (_, i) => {
-    const d = new Date(debutJour(i)*1000);
-    const nom = i === 0 ? "Aujourd'hui" : i === 1 ? "Demain" : JOURS[d.getDay()]+" "+d.getDate();
+    const nom = i === 0 ? "Aujourd'hui" : i === 1 ? "Demain" : jourCourt(midiParis(i));
     return `<button class="jour${i === jourChoisi && !texteRech ? " actif" : ""}" data-j="${i}">${nom}</button>`;
   }).join("");
   // Puces sports
@@ -217,7 +220,7 @@ function afficher(){
     if (enCours.length) html += `<h2>En ce moment</h2>` + enCours.map(p => carte(p, maintenant)).join("");
     let groupe = "";
     for (const p of aVenir){
-      const g = texteRech ? (JOURS[new Date(p.d*1000).getDay()]+" "+new Date(p.d*1000).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})) : moment(p.d);
+      const g = texteRech ? new Date(p.d*1000).toLocaleDateString("fr-FR",{timeZone:"Europe/Paris", weekday:"long", day:"numeric", month:"long"}) : moment(p.d);
       if (g !== groupe){ html += `<h2>${g}</h2>`; groupe = g; }
       html += carte(p, maintenant);
     }
@@ -229,7 +232,7 @@ function afficher(){
   else if (D.programmes.length && !mesSports) band = `<div class="bandeau">👋 Choisis tes sports et tes chaînes<button id="bChoisir">Régler</button></div>`;
   $("bandeau").innerHTML = band;
   if ($("bChoisir")) $("bChoisir").onclick = ouvrirReglages;
-  $("info").textContent = META ? "Mis à jour le "+new Date(META.maj*1000).toLocaleString("fr-FR",{weekday:"long",day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"})+" · source xmltvfr.fr" : "";
+  $("info").textContent = META ? "Mis à jour le "+new Date(META.maj*1000).toLocaleString("fr-FR",{timeZone:"Europe/Paris",weekday:"long",day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"})+" · source xmltvfr.fr" : "";
 }
 
 function remplirReglages(){

@@ -17,7 +17,7 @@ Appli (PWA) sur GitHub Pages : https://ritemo.github.io/sport-tv/
 | Élément | Rôle |
 |---|---|
 | `collector/programme.py` | Le robot. Télécharge le guide (environ 80 Mo), garde le sport, devine la discipline (Football, Rugby, Handball...), repère les directs, rediffusions et magazines |
-| `config.json` | Les réglages : adresses du guide, nombre de jours, chaînes gardées (`chaines_generalistes`, où seul le sport est gardé, et `chaines_sport`), écrans de remplissage à écarter (`titres_remplissage`), ordre d'affichage |
+| `config.json` | Les réglages : adresses du guide, nombre de jours, sports gardés (`sports_gardes`), mots qui écartent un programme (`mots_exclus`, par exemple MotoGP, rallye, patinage, padel), magazines gardés ou non (`garder_magazines`), chaînes gardées (`chaines_generalistes`, où seul le sport est gardé, et `chaines_sport`), écrans de remplissage à écarter (`titres_remplissage`), ordre d'affichage |
 | `.github/workflows/collecte.yml` | Lance le robot vers 4h40 et 16h15 (heure d'hiver ; une heure de plus en été) |
 | `.github/workflows/tests.yml` | Vérifie le robot à chaque modification |
 | `index.html`, `sw.js`, `manifest.webmanifest`, `icons/` | L'appli |
@@ -35,6 +35,7 @@ Appli (PWA) sur GitHub Pages : https://ritemo.github.io/sport-tv/
 ## Utilisation
 
 - **Réglages** (bouton à curseurs en haut à droite) : cocher ses sports, décocher les chaînes qu'on ne reçoit pas (« TNT gratuite seulement » en un geste). C'est gardé sur le téléphone.
+- **Heures** : toujours à l'heure de Paris, même si le téléphone est réglé sur un autre fuseau.
 - **Jours** : aujourd'hui et les 7 suivants. Les programmes terminés disparaissent, celui en cours est encadré avec une barre de progression.
 - **Puces de sport** : pour ne voir qu'un sport un moment.
 - **Matchs et courses** (cache les magazines et émissions de plateau) et **Sans rediffs** : filtres rapides, gardés aussi. Le badge « Direct » apparaît quand le guide le précise.
@@ -42,6 +43,8 @@ Appli (PWA) sur GitHub Pages : https://ritemo.github.io/sport-tv/
 - Toucher un programme affiche sa description.
 
 ## Gestes courants
+
+- **Ajouter ou retirer un sport** : liste `sports_gardes` dans `config.json` (noms possibles : ceux de la liste `SPORTS` du robot). Pour écarter seulement une partie d'un sport (exemple : le rallye dans les sports mécaniques), ajouter le mot à `mots_exclus`, en minuscules sans accents.
 
 - **Un sport mal classé** : ajouter le mot clé dans la liste `SPORTS` en haut de `collector/programme.py` (mots en minuscules, sans accents). L'ordre compte : le premier sport trouvé gagne.
 - **Une chaîne manque** : l'ajouter dans `config.json` à `chaines_sport` (chaîne de sport) ou à `chaines_generalistes` (chaîne généraliste), avec son identifiant xmltvfr (exemple : `Eurosport1.fr`).

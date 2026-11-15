@@ -189,9 +189,15 @@ def analyser(flux, maintenant=None):
                         if direct and contient(t + " " + s, ["differe", "rediffusion"]):
                             direct = False
                         magazine = (contient(cats, MOTS_MAGAZINE) or contient(t, TITRES_MAGAZINE)) and not contient(cats, ["match", "retransmission"])
+                        sport = discipline(cats, t, s, sans_accents(desc))
+                        if sport not in CONFIG["sports_gardes"] or contient(cats + " " + t + " " + s, CONFIG["mots_exclus"]):
+                            el.clear()
+                            continue
+                        if magazine and not CONFIG["garder_magazines"]:
+                            el.clear()
+                            continue
                         titre, st = affiche(titre, st)
-                        p = {"c": cid, "d": debut, "f": fin, "t": titre,
-                             "sp": discipline(cats, t, s, sans_accents(desc))}
+                        p = {"c": cid, "d": debut, "f": fin, "t": titre, "sp": sport}
                         if st:
                             p["st"] = st
                         if desc:
