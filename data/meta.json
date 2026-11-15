@@ -1,11 +1,11 @@
 {
- "maj": 1794735546,
+ "maj": 1794735680,
  "source": "https://xmltvfr.fr/xmltv/xmltv.xml.gz",
- "programmes": 2794,
+ "programmes": 2795,
  "chaines": 60,
  "par_sport": {
   "Football": 953,
-  "Autres sports": 611,
+  "Autres sports": 612,
   "Sports d'hiver": 200,
   "Sports mécaniques": 188,
   "Basket": 174,
@@ -24,5 +24,5 @@
   "Sports nautiques": 4,
   "Natation": 2
  },
- "duree_s": 7
+ "duree_s": 10
 }
