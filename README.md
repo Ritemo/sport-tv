@@ -44,7 +44,7 @@ Appli (PWA) sur GitHub Pages : https://ritemo.github.io/sport-tv/
 ## Gestes courants
 
 - **Un sport mal classé** : ajouter le mot clé dans la liste `SPORTS` en haut de `collector/programme.py` (mots en minuscules, sans accents). L'ordre compte : le premier sport trouvé gagne.
-- **Une chaîne manque** : l'ajouter à `chaines_sport` (ou `chaines_generalistes`, où seul le sport est gardé,) dans `config.json`, avec son identifiant xmltvfr (exemple : `Eurosport1.fr`).
+- **Une chaîne manque** : l'ajouter dans `config.json` à `chaines_sport` (chaîne de sport) ou à `chaines_generalistes` (chaîne généraliste), avec son identifiant xmltvfr (exemple : `Eurosport1.fr`).
 - **Un faux programme s'affiche** (écran d'attente, pub maison) : ajouter un morceau de son titre, en minuscules sans accents, à `titres_remplissage`.
 - **Changer l'ordre des chaînes** : `ordre_chaines` dans `config.json`.
 - **Après une modification de l'appli** : changer la version dans `sw.js` (`sport-tv-v1` devient `sport-tv-v2`), sinon les téléphones gardent l'ancienne.
