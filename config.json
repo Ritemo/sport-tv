@@ -5,7 +5,6 @@
     "https://xmltvfr.fr/xmltv/xmltv.xml"
   ],
   "jours": 8,
-  "ntfy_alerte": "sport-tv-alerte-be63e7a7",
   "chaines_exclues_motifs": ["France3[A-Z]", "FranceFrance3", "DROM", "Afrique", "Polynesie", "Reunion", "\\.be$", "\\.ch$", "\\.ca$", "\\.ma$", "\\.tn$"],
   "chaines_sport": [
     "LEquipe21.fr", "CanalPlusSport.fr", "CanalPlusSport360.fr", "CanalPlusFoot.fr",

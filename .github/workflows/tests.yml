@@ -16,8 +16,3 @@ jobs:
           python-version: "3.12"
       - name: Lancer les tests
         run: python -m unittest discover tests -v
-      - name: Alerte si échec
-        if: failure()
-        run: |
-          SUJET=$(python -c "import json;print(json.load(open('config.json'))['ntfy_alerte'])")
-          curl -s -H "Title: Sport TV : tests en échec" -H "Tags: x" -d "Les tests ont échoué après le dernier envoi. Voir l'onglet Actions." "https://ntfy.sh/$SUJET"

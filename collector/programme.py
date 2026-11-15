@@ -190,14 +190,6 @@ def analyser(flux, maintenant=None):
     return {"chaines": [{"id": c, **chaines[c]} for c in liste], "programmes": progs}
 
 
-def alerter(message):
-    try:
-        urllib.request.urlopen(urllib.request.Request(
-            "https://ntfy.sh/" + CONFIG["ntfy_alerte"], data=message.encode("utf-8"),
-            headers={"Title": "Sport TV : souci du robot", "Tags": "warning"}), timeout=20)
-    except Exception:  # noqa: BLE001
-        pass
-
 
 def main():
     debut = time.time()
@@ -208,7 +200,6 @@ def main():
         if nb < 50:
             raise RuntimeError(f"Seulement {nb} programmes de sport trouvés, le guide semble incomplet.")
     except Exception as e:  # noqa: BLE001
-        alerter(str(e)[:900])
         print("ERREUR :", e, file=sys.stderr)
         sys.exit(1)
     DATA.mkdir(exist_ok=True)

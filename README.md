@@ -17,9 +17,9 @@ Appli (PWA) sur GitHub Pages : https://ritemo.github.io/sport-tv/
 | Élément | Rôle |
 |---|---|
 | `collector/programme.py` | Le robot. Télécharge le guide (environ 80 Mo), garde le sport, devine la discipline (Football, Rugby, Handball...), repère les directs, rediffusions et magazines |
-| `config.json` | Les réglages : adresses du guide, nombre de jours, chaînes de sport, chaînes écartées, ordre d'affichage, sujet d'alerte ntfy |
+| `config.json` | Les réglages : adresses du guide, nombre de jours, chaînes de sport, chaînes écartées, ordre d'affichage |
 | `.github/workflows/collecte.yml` | Lance le robot vers 4h40 et 16h15 (heure d'hiver ; une heure de plus en été) |
-| `.github/workflows/tests.yml` | Vérifie le robot à chaque modification et envoie une alerte si ça casse |
+| `.github/workflows/tests.yml` | Vérifie le robot à chaque modification |
 | `index.html`, `sw.js`, `manifest.webmanifest`, `icons/` | L'appli |
 | `data/meta.json` | Journal du dernier passage : heure, nombre de programmes, nombre par sport |
 
@@ -48,9 +48,9 @@ Appli (PWA) sur GitHub Pages : https://ritemo.github.io/sport-tv/
 - **Changer l'ordre des chaînes** : `ordre_chaines` dans `config.json`.
 - **Après une modification de l'appli** : changer la version dans `sw.js` (`sport-tv-v1` devient `sport-tv-v2`), sinon les téléphones gardent l'ancienne.
 
-## En cas d'alerte
+## En cas de souci
 
-Les alertes arrivent dans l'appli ntfy, sujet `sport-tv-alerte-be63e7a7` (à ajouter une fois dans ntfy).
+Si le robot échoue, GitHub envoie un mail et le passage apparaît en rouge dans l'onglet *Actions*. L'appli affiche aussi un bandeau si le programme a plus de 36 heures.
 
 - « Aucune source disponible » : le site xmltvfr.fr était injoignable. Le robot réessaie au passage suivant ; l'appli garde le dernier programme et affiche un bandeau s'il a plus de 36 heures. Si ça dure plusieurs jours, vérifier sur https://xmltvfr.fr que les adresses de `sources` dans `config.json` sont toujours les bonnes.
 - « Seulement N programmes de sport » : le guide est arrivé incomplet. Même chose, attendre le passage suivant.
