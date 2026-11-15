@@ -41,6 +41,8 @@ Appli (PWA) sur GitHub Pages : https://ritemo.github.io/sport-tv/
 - **Matchs et courses** (cache les magazines et émissions de plateau) et **Sans rediffs** : filtres rapides, gardés aussi. Le badge « Direct » apparaît quand le guide le précise.
 - **Loupe** : chercher une équipe ou une compétition (« PSG », « Starligue ») sur toute la semaine.
 - Toucher un programme affiche sa description.
+- **Mettre à jour** (flèche ronde en haut, ou bouton en bas de liste) : recharge le dernier programme préparé par le robot et installe la nouvelle version de l'appli s'il y en a une. Le robot, lui, passe deux fois par jour.
+- Chaque sport a son icône et sa couleur (liseré à gauche de la carte, barre de progression du programme en cours).
 
 ## Gestes courants
 
