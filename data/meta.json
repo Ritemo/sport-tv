@@ -1,21 +1,21 @@
 {
- "maj": 1794738522,
+ "maj": 1794774213,
  "source": "https://xmltvfr.fr/xmltv/xmltv.xml.gz",
- "programmes": 516,
+ "programmes": 480,
  "chaines": 50,
  "par_sport": {
-  "Football": 201,
-  "Sports d'hiver": 81,
-  "Tennis": 69,
-  "Sports mécaniques": 49,
-  "Basket": 42,
-  "Rugby": 25,
-  "Cyclisme": 21,
+  "Football": 196,
+  "Sports d'hiver": 71,
+  "Tennis": 66,
+  "Sports mécaniques": 47,
+  "Basket": 37,
+  "Rugby": 22,
+  "Cyclisme": 15,
   "Équitation": 14,
   "Athlétisme": 7,
-  "Hockey": 3,
-  "Handball": 3,
+  "Hockey": 2,
+  "Handball": 2,
   "Sports nautiques": 1
  },
- "duree_s": 11
+ "duree_s": 7
 }
