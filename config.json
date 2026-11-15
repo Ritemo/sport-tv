@@ -1,0 +1,25 @@
+{
+  "sources": [
+    "https://xmltvfr.fr/xmltv/xmltv.xml.gz",
+    "https://xmltvfr.fr/xmltv/xmltv.zip",
+    "https://xmltvfr.fr/xmltv/xmltv.xml"
+  ],
+  "jours": 8,
+  "ntfy_alerte": "sport-tv-alerte-be63e7a7",
+  "chaines_exclues_motifs": ["France3[A-Z]", "FranceFrance3", "DROM", "Afrique", "Polynesie", "Reunion", "\\.be$", "\\.ch$", "\\.ca$", "\\.ma$", "\\.tn$"],
+  "chaines_sport": [
+    "LEquipe21.fr", "CanalPlusSport.fr", "CanalPlusSport360.fr", "CanalPlusFoot.fr",
+    "Eurosport1.fr", "Eurosport2.fr", "beINSPORTS1.fr", "beINSPORTS2.fr", "beINSPORTS3.fr",
+    "beINSPORTSMAX4.fr", "beINSPORTSMAX5.fr", "beINSPORTSMAX6.fr", "beINSPORTSMAX7.fr",
+    "beINSPORTSMAX8.fr", "beINSPORTSMAX9.fr", "beINSPORTSMAX10.fr",
+    "RMCSport1.fr", "RMCSport2.fr", "RMCSport3.fr", "RMCSport4.fr", "RMCSportAccess1.fr", "RMCSportUHD.fr",
+    "InfosportPlus.fr", "GolfPlus.fr", "SportPlus.fr", "AutomotoLaChaine.fr", "Equidia.fr", "DAZN1.fr", "LigueUnPlus.fr"
+  ],
+  "ordre_chaines": [
+    "TF1.fr", "France2.fr", "France3.fr", "CanalPlus.fr", "France4.fr", "France5.fr", "M6.fr", "Arte.fr",
+    "W9.fr", "TMC.fr", "TFX.fr", "LEquipe21.fr", "RMC.fr", "RMCDecouverte.fr",
+    "CanalPlusSport.fr", "CanalPlusFoot.fr", "CanalPlusSport360.fr",
+    "beINSPORTS1.fr", "beINSPORTS2.fr", "beINSPORTS3.fr",
+    "Eurosport1.fr", "Eurosport2.fr", "RMCSport1.fr", "RMCSport2.fr", "InfosportPlus.fr"
+  ]
+}

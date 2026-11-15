@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sport TV</title>
+<meta name="theme-color" content="#0c3b2e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+:root{
+  --fond:#f3f1ea; --carte:#fff; --encre:#14201b; --doux:#5f6b65; --trait:#e3dfd3;
+  --vert:#0c3b2e; --vert2:#14614a; --citron:#d7f25a; --rouge:#e5372b; --ambre:#b7791f;
+  --r:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--fond);color:var(--encre);font:15px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.app{max-width:720px;margin:0 auto;padding-bottom:40px}
+
+/* En-tête */
+header{position:sticky;top:0;z-index:5;background:var(--vert);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 0}
+.ligne1{display:flex;align-items:center;gap:10px}
+.logo{font-weight:800;font-size:20px;letter-spacing:-.3px;flex:1}
+.logo b{color:var(--citron)}
+.icone{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.1)}
+.icone svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.recherche{display:none;margin-top:10px}
+.recherche.ouverte{display:block}
+.recherche input{width:100%;padding:10px 12px;border-radius:10px;border:0;font:inherit;background:#fff;color:var(--encre)}
+.jours{display:flex;gap:6px;overflow-x:auto;padding:12px 0 12px;scrollbar-width:none}
+.jours::-webkit-scrollbar,.sports::-webkit-scrollbar{display:none}
+.jour{flex:0 0 auto;padding:7px 12px;border-radius:20px;background:rgba(255,255,255,.1);color:#d9e6e0;font-size:14px;white-space:nowrap}
+.jour small{display:block;font-size:11px;opacity:.75;text-align:center}
+.jour.actif{background:var(--citron);color:var(--vert);font-weight:700}
+
+/* Filtres */
+.filtres{padding:12px 14px 4px}
+.sports{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:8px}
+.puce{flex:0 0 auto;padding:7px 12px;border-radius:20px;background:var(--carte);border:1px solid var(--trait);font-size:14px;white-space:nowrap}
+.puce.actif{background:var(--encre);color:#fff;border-color:var(--encre)}
+.bascules{display:flex;gap:6px;flex-wrap:wrap}
+.bascule{font-size:13px;padding:5px 10px;border-radius:8px;border:1px dashed #c9c3b2;color:var(--doux)}
+.bascule.actif{border-style:solid;border-color:var(--vert2);color:var(--vert2);background:#e4f0ea;font-weight:600}
+
+/* Liste */
+main{padding:0 14px}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--doux);margin:22px 2px 8px;display:flex;align-items:center;gap:8px}
+h2::after{content:"";flex:1;height:1px;background:var(--trait)}
+.prog{display:flex;gap:12px;background:var(--carte);border-radius:var(--r);padding:12px;margin-bottom:8px;box-shadow:0 1px 0 var(--trait);width:100%;text-align:left;position:relative;overflow:hidden}
+.heure{flex:0 0 52px;font-variant-numeric:tabular-nums}
+.heure b{display:block;font-size:17px;letter-spacing:-.3px}
+.heure span{font-size:12px;color:var(--doux)}
+.corps{flex:1;min-width:0}
+.haut{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--doux);margin-bottom:3px}
+.disc{font-weight:600;color:var(--vert2)}
+.titre{font-weight:700;font-size:15.5px;line-height:1.25}
+.st{color:var(--doux);font-size:13.5px;margin-top:2px}
+.chaine{display:inline-flex;align-items:center;gap:6px;margin-top:7px;font-size:12.5px;font-weight:600;background:#f0eee6;border-radius:6px;padding:3px 8px 3px 4px}
+.chaine img{width:22px;height:16px;object-fit:contain}
+.chaine i{width:6px;height:6px;border-radius:50%;background:var(--doux);margin-left:3px}
+.badge{font-size:10.5px;font-weight:800;letter-spacing:.5px;padding:2px 6px;border-radius:4px;text-transform:uppercase}
+.b-live{background:var(--rouge);color:#fff}
+.b-redif{background:#ece6d6;color:var(--ambre)}
+.b-mag{background:#e9eef7;color:#3b5a8c}
+.desc{display:none;font-size:13.5px;color:#3d4843;margin-top:8px}
+.prog.ouvert .desc{display:block}
+.encours{border:2px solid var(--citron);box-shadow:0 2px 10px rgba(12,59,46,.12)}
+.barre{position:absolute;left:0;bottom:0;height:3px;background:var(--vert2)}
+.pulse{width:8px;height:8px;border-radius:50%;background:var(--rouge);animation:p 1.4s infinite}
+@keyframes p{50%{opacity:.25}}
+.vide{text-align:center;color:var(--doux);padding:50px 20px}
+.vide b{display:block;font-size:40px;margin-bottom:8px}
+.info{font-size:12px;color:var(--doux);text-align:center;margin:26px 0 0}
+.bandeau{margin:12px 14px 0;background:var(--citron);color:var(--vert);border-radius:var(--r);padding:12px 14px;display:flex;gap:10px;align-items:center;font-weight:600}
+.bandeau button{margin-left:auto;background:var(--vert);color:#fff;padding:7px 12px;border-radius:8px;font-weight:700}
+.alerte{background:#fdecea;color:#8a1f17}
+
+/* Réglages */
+.voile{position:fixed;inset:0;background:rgba(10,20,15,.45);z-index:10;display:none}
+.voile.ouvert{display:block}
+.panneau{position:fixed;left:0;right:0;bottom:0;max-width:720px;margin:0 auto;max-height:88vh;overflow:auto;background:var(--fond);border-radius:20px 20px 0 0;z-index:11;padding:8px 16px calc(24px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .25s}
+.panneau.ouvert{transform:none}
+.poignee{width:40px;height:4px;border-radius:2px;background:#cfc9b8;margin:4px auto 10px}
+.panneau h3{margin:18px 0 4px;font-size:17px}
+.panneau p{margin:0 0 10px;color:var(--doux);font-size:13px}
+.grille{display:flex;flex-wrap:wrap;gap:7px}
+.choix{padding:8px 11px;border-radius:10px;background:var(--carte);border:1.5px solid var(--trait);font-size:14px}
+.choix small{color:var(--doux);margin-left:4px}
+.choix.oui{border-color:var(--vert2);background:#e4f0ea;color:var(--vert);font-weight:600}
+.liens{display:flex;gap:14px;margin:6px 0 8px;font-size:13px}
+.liens button{color:var(--vert2);text-decoration:underline;padding:0}
+.fermer{display:block;width:100%;margin-top:22px;background:var(--vert);color:#fff;padding:13px;border-radius:12px;font-weight:700}
+@media (min-width:760px){.app{padding-top:10px}header{border-radius:0 0 18px 18px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="ligne1">
+      <div class="logo">Sport<b>TV</b></div>
+      <button class="icone" id="bRech" aria-label="Rechercher"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+      <button class="icone" id="bReg" aria-label="Mes sports et chaînes"><svg viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
+    </div>
+    <div class="recherche" id="zoneRech"><input id="rech" type="search" placeholder="Équipe, compétition, joueur..." autocomplete="off"></div>
+    <nav class="jours" id="jours"></nav>
+  </header>
+  <div id="bandeau"></div>
+  <section class="filtres">
+    <div class="sports" id="sports"></div>
+    <div class="bascules" id="bascules"></div>
+  </section>
+  <main id="liste"></main>
+  <p class="info" id="info"></p>
+</div>
+
+<div class="voile" id="voile"></div>
+<aside class="panneau" id="panneau" aria-label="Réglages">
+  <div class="poignee"></div>
+  <h3>Mes sports</h3>
+  <p>Seuls ces sports apparaissent dans le programme.</p>
+  <div class="liens"><button data-tout="sports">Tout cocher</button><button data-rien="sports">Tout décocher</button></div>
+  <div class="grille" id="regSports"></div>
+  <h3>Mes chaînes</h3>
+  <p>Décoche les chaînes que tu ne reçois pas.</p>
+  <div class="liens"><button data-tout="chaines">Tout cocher</button><button data-rien="chaines">Tout décocher</button><button id="tnt">TNT gratuite seulement</button></div>
+  <div class="grille" id="regChaines"></div>
+  <button class="fermer" id="bFermer">Voir le programme</button>
+</aside>
+
+<script>
+const EMOJI = {"Football":"⚽","Rugby":"🏉","Handball":"🤾","Basket":"🏀","Volley":"🏐","Tennis":"🎾","Cyclisme":"🚴","Sports mécaniques":"🏎️","Golf":"⛳","Sports d'hiver":"⛷️","Hockey":"🏒","Sports US":"🏈","Combat":"🥊","Athlétisme":"🏃","Natation":"🏊","Sports nautiques":"⛵","Équitation":"🏇","Fléchettes et billard":"🎯","Gymnastique":"🤸","Autres sports":"🏅"};
+const TNT = ["TF1.fr","France2.fr","France3.fr","France4.fr","France5.fr","M6.fr","Arte.fr","W9.fr","TMC.fr","TFX.fr","LEquipe21.fr","RMCDecouverte.fr","RMCStory.fr","6ter.fr","CStar.fr","Gulli.fr","NRJ12.fr","C8.fr","CNews.fr","Cherie25.fr","TF1SeriesFilms.fr","LCP.fr","BFMTV.fr","FranceInfo.fr","T18.fr","NOVO19.fr"];
+const JOURS = ["dim.","lun.","mar.","mer.","jeu.","ven.","sam."];
+
+// Préférences gardées sur le téléphone (localStorage peut être indisponible)
+function lire(cle, defaut){ try{ const v = localStorage.getItem("sporttv-"+cle); return v ? JSON.parse(v) : defaut; }catch(e){ return defaut; } }
+function ecrire(cle, v){ try{ localStorage.setItem("sporttv-"+cle, JSON.stringify(v)); }catch(e){} }
+
+let D = {chaines:[], programmes:[]}, META = null;
+let mesSports = lire("sports", null);      // null = jamais réglé : tout afficher
+let sansChaines = new Set(lire("sansChaines", []));
+let opts = lire("opts", {live:false, mag:false, redif:false});
+let jourChoisi = 0, sportFocus = null, texteRech = "";
+const $ = id => document.getElementById(id);
+const nomChaine = {}, logoChaine = {};
+
+function debutJour(decalage){ const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+decalage); return d.getTime()/1000; }
+function hhmm(s){ const d = new Date(s*1000); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
+function duree(p){ const m = Math.round((p.f-p.d)/60); return m >= 60 ? Math.floor(m/60)+" h "+(m%60 ? String(m%60).padStart(2,"0") : "") : m+" min"; }
+function norm(t){ return (t||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase(); }
+function esc(t){ return (t||"").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function tousSports(){ const s = new Set(D.programmes.map(p => p.sp)); return Object.keys(EMOJI).filter(k => s.has(k)); }
+function sportsActifs(){ return mesSports ? tousSports().filter(s => mesSports.includes(s)) : tousSports(); }
+
+function filtrer(){
+  const maintenant = Date.now()/1000, a = debutJour(jourChoisi), b = debutJour(jourChoisi+1);
+  const actifs = new Set(sportsActifs()), q = norm(texteRech);
+  return D.programmes.filter(p => {
+    if (!q && (p.d < a || p.d >= b)) return false;
+    if (p.f <= maintenant) return false;
+    if (!actifs.has(p.sp) || sansChaines.has(p.c)) return false;
+    if (sportFocus && p.sp !== sportFocus) return false;
+    if (opts.live && !p.live) return false;
+    if (opts.mag && p.mag) return false;
+    if (opts.redif && p.redif) return false;
+    if (q && !norm(p.t+" "+(p.st||"")+" "+(p.ds||"")+" "+nomChaine[p.c]).includes(q)) return false;
+    return true;
+  });
+}
+
+function carte(p, maintenant){
+  const enCours = p.d <= maintenant && p.f > maintenant;
+  const pct = enCours ? Math.min(100, (maintenant-p.d)/(p.f-p.d)*100) : 0;
+  const badges = (enCours ? '<span class="pulse"></span>' : "")
+    + (p.live ? '<span class="badge b-live">Direct</span>' : "")
+    + (p.redif ? '<span class="badge b-redif">Rediff</span>' : "")
+    + (p.mag ? '<span class="badge b-mag">Magazine</span>' : "");
+  const logo = logoChaine[p.c] ? `<img src="${esc(logoChaine[p.c])}" alt="" loading="lazy" onerror="this.remove()">` : "<i></i>";
+  const jour = texteRech ? `<span>${JOURS[new Date(p.d*1000).getDay()]} ${new Date(p.d*1000).getDate()}</span>` : `<span>${duree(p)}</span>`;
+  return `<button class="prog${enCours ? " encours" : ""}">
+    <div class="heure"><b>${hhmm(p.d)}</b>${jour}</div>
+    <div class="corps">
+      <div class="haut"><span class="disc">${EMOJI[p.sp]||"🏅"} ${esc(p.sp)}</span>${badges}</div>
+      <div class="titre">${esc(p.t)}</div>
+      ${p.st ? `<div class="st">${esc(p.st)}</div>` : ""}
+      <span class="chaine">${logo}${esc(nomChaine[p.c]||p.c)}</span>
+      ${p.ds ? `<div class="desc">${esc(p.ds)}</div>` : ""}
+    </div>
+    ${enCours ? `<div class="barre" style="width:${pct}%"></div>` : ""}
+  </button>`;
+}
+
+function moment(s){ const h = new Date(s*1000).getHours(); return h < 6 ? "Nuit" : h < 12 ? "Matin" : h < 18 ? "Après-midi" : "Soirée"; }
+
+function afficher(){
+  const maintenant = Date.now()/1000, liste = filtrer();
+  // Jours
+  $("jours").innerHTML = Array.from({length:8}, (_, i) => {
+    const d = new Date(debutJour(i)*1000);
+    const nom = i === 0 ? "Aujourd'hui" : i === 1 ? "Demain" : JOURS[d.getDay()]+" "+d.getDate();
+    return `<button class="jour${i === jourChoisi && !texteRech ? " actif" : ""}" data-j="${i}">${nom}</button>`;
+  }).join("");
+  // Puces sports
+  const actifs = sportsActifs();
+  $("sports").innerHTML = actifs.length > 1 ? `<button class="puce${!sportFocus ? " actif" : ""}" data-s="">Tous</button>`
+    + actifs.map(s => `<button class="puce${sportFocus === s ? " actif" : ""}" data-s="${esc(s)}">${EMOJI[s]} ${esc(s)}</button>`).join("") : "";
+  $("bascules").innerHTML = [["live","Directs"],["mag","Sans magazines"],["redif","Sans rediffs"]]
+    .map(([k, l]) => `<button class="bascule${opts[k] ? " actif" : ""}" data-o="${k}">${l}</button>`).join("");
+  // Liste
+  let html = "";
+  if (!D.programmes.length) html = `<div class="vide"><b>📺</b>Le programme n'est pas encore disponible.<br>Le robot le prépare deux fois par jour.</div>`;
+  else if (!liste.length) html = `<div class="vide"><b>🛋️</b>${texteRech ? "Rien trouvé pour « "+esc(texteRech)+" »." : "Rien pour tes sports ce jour-là."}<br>Essaie un autre jour ou ajoute des sports.</div>`;
+  else {
+    const enCours = liste.filter(p => p.d <= maintenant), aVenir = liste.filter(p => p.d > maintenant);
+    if (enCours.length) html += `<h2>En ce moment</h2>` + enCours.map(p => carte(p, maintenant)).join("");
+    let groupe = "";
+    for (const p of aVenir){
+      const g = texteRech ? (JOURS[new Date(p.d*1000).getDay()]+" "+new Date(p.d*1000).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})) : moment(p.d);
+      if (g !== groupe){ html += `<h2>${g}</h2>`; groupe = g; }
+      html += carte(p, maintenant);
+    }
+  }
+  $("liste").innerHTML = html;
+  // Bandeaux
+  let band = "";
+  if (META && Date.now()/1000 - META.maj > 36*3600) band = `<div class="bandeau alerte">⚠️ Programme pas mis à jour depuis ${Math.round((Date.now()/1000-META.maj)/3600)} h.</div>`;
+  else if (D.programmes.length && !mesSports) band = `<div class="bandeau">👋 Choisis tes sports et tes chaînes<button id="bChoisir">Régler</button></div>`;
+  $("bandeau").innerHTML = band;
+  if ($("bChoisir")) $("bChoisir").onclick = ouvrirReglages;
+  $("info").textContent = META ? "Mis à jour le "+new Date(META.maj*1000).toLocaleString("fr-FR",{weekday:"long",day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"})+" · source xmltvfr.fr" : "";
+}
+
+function remplirReglages(){
+  const nb = {}; D.programmes.forEach(p => nb[p.sp] = (nb[p.sp]||0)+1);
+  const coches = new Set(mesSports || tousSports());
+  $("regSports").innerHTML = tousSports().map(s => `<button class="choix${coches.has(s) ? " oui" : ""}" data-rs="${esc(s)}">${EMOJI[s]} ${esc(s)}<small>${nb[s]}</small></button>`).join("");
+  $("regChaines").innerHTML = D.chaines.map(c => `<button class="choix${sansChaines.has(c.id) ? "" : " oui"}" data-rc="${esc(c.id)}">${esc(c.nom)}</button>`).join("");
+}
+function ouvrirReglages(){ remplirReglages(); $("voile").classList.add("ouvert"); $("panneau").classList.add("ouvert"); }
+function fermerReglages(){
+  if (!mesSports) { mesSports = tousSports(); ecrire("sports", mesSports); }
+  $("voile").classList.remove("ouvert"); $("panneau").classList.remove("ouvert"); afficher();
+}
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("button"); if (!t) return;
+  if (t.dataset.j !== undefined){ jourChoisi = +t.dataset.j; texteRech = ""; $("rech").value = ""; afficher(); scrollTo({top:0}); }
+  else if (t.dataset.s !== undefined){ sportFocus = t.dataset.s || null; afficher(); }
+  else if (t.dataset.o){ opts[t.dataset.o] = !opts[t.dataset.o]; ecrire("opts", opts); afficher(); }
+  else if (t.dataset.rs){
+    const s = new Set(mesSports || tousSports()); s.has(t.dataset.rs) ? s.delete(t.dataset.rs) : s.add(t.dataset.rs);
+    mesSports = [...s]; ecrire("sports", mesSports); if (sportFocus && !s.has(sportFocus)) sportFocus = null; remplirReglages();
+  }
+  else if (t.dataset.rc){ sansChaines.has(t.dataset.rc) ? sansChaines.delete(t.dataset.rc) : sansChaines.add(t.dataset.rc); ecrire("sansChaines", [...sansChaines]); remplirReglages(); }
+  else if (t.dataset.tout){ if (t.dataset.tout === "sports") mesSports = tousSports(); else sansChaines.clear(); ecrire("sports", mesSports); ecrire("sansChaines", [...sansChaines]); remplirReglages(); }
+  else if (t.dataset.rien){ if (t.dataset.rien === "sports") mesSports = []; else D.chaines.forEach(c => sansChaines.add(c.id)); ecrire("sports", mesSports); ecrire("sansChaines", [...sansChaines]); remplirReglages(); }
+  else if (t.id === "tnt"){ sansChaines = new Set(D.chaines.map(c => c.id).filter(id => !TNT.includes(id))); ecrire("sansChaines", [...sansChaines]); remplirReglages(); }
+  else if (t.classList.contains("prog")) t.classList.toggle("ouvert");
+});
+$("bReg").onclick = ouvrirReglages;
+$("bFermer").onclick = fermerReglages;
+$("voile").onclick = fermerReglages;
+$("bRech").onclick = () => { $("zoneRech").classList.toggle("ouverte"); if ($("zoneRech").classList.contains("ouverte")) $("rech").focus(); else { texteRech = ""; $("rech").value = ""; afficher(); } };
+$("rech").oninput = e => { texteRech = e.target.value.trim(); afficher(); };
+
+async function charger(){
+  try {
+    const [r1, r2] = await Promise.all([fetch("data/programme.json", {cache:"no-cache"}), fetch("data/meta.json", {cache:"no-cache"})]);
+    if (r1.ok) D = await r1.json();
+    if (r2.ok) META = await r2.json();
+  } catch(e) {}
+  D.chaines.forEach(c => { nomChaine[c.id] = c.nom; logoChaine[c.id] = c.logo; });
+  afficher();
+}
+charger();
+setInterval(afficher, 60000);  // barre de progression et programmes terminés
+document.addEventListener("visibilitychange", () => { if (!document.hidden) charger(); });
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>

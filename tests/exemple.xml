@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tv>
+  <channel id="TF1.fr"><display-name>TF1</display-name><icon src="https://exemple.fr/tf1.png"/></channel>
+  <channel id="LEquipe21.fr"><display-name>L'Equipe</display-name></channel>
+  <channel id="beINSPORTS1.fr"><display-name>beIN SPORTS 1</display-name></channel>
+  <channel id="France3Alsace.fr"><display-name>France 3 Alsace</display-name></channel>
+  <channel id="VOOSportWorld1.be"><display-name>VOO Sport</display-name></channel>
+  <programme start="20261115201000 +0100" stop="20261115230000 +0100" channel="TF1.fr">
+    <title lang="fr">Football : France / Espagne</title><sub-title lang="fr">Ligue des nations</sub-title>
+    <desc lang="fr">Les Bleus reçoivent la Roja en direct du Stade de France.</desc>
+    <category lang="fr">Sport</category><category lang="fr">Football</category>
+  </programme>
+  <programme start="20261115230000 +0100" stop="20261116003000 +0100" channel="TF1.fr">
+    <title lang="fr">Esprits criminels</title><category lang="fr">Série</category>
+  </programme>
+  <programme start="20261115180000 +0100" stop="20261115194500 +0100" channel="LEquipe21.fr">
+    <title lang="fr">Handball : Montpellier / PSG</title><sub-title lang="fr">Liqui Moly Starligue, en direct</sub-title>
+    <category lang="fr">Sport</category>
+  </programme>
+  <programme start="20261115194500 +0100" stop="20261115210000 +0100" channel="LEquipe21.fr">
+    <title lang="fr">L'Équipe du soir</title><category lang="fr">Magazine sportif</category>
+  </programme>
+  <programme start="20261115140000 +0100" stop="20261115160000 +0100" channel="beINSPORTS1.fr">
+    <title lang="fr">Top 14 : Toulouse / Clermont</title><category lang="fr">Rugby</category><previously-shown/>
+  </programme>
+  <programme start="20261115160000 +0100" stop="20261115170000 +0100" channel="beINSPORTS1.fr">
+    <title lang="fr">Grand Prix du Brésil</title><sub-title lang="fr">Formule 1, la course</sub-title>
+  </programme>
+  <programme start="20261115160000 +0100" stop="20261115170000 +0100" channel="beINSPORTS1.fr">
+    <title lang="fr">Doublon</title>
+  </programme>
+  <programme start="20261115120000 +0100" stop="20261115130000 +0100" channel="France3Alsace.fr">
+    <title lang="fr">Rugby régional</title><category lang="fr">Rugby</category>
+  </programme>
+  <programme start="20261115120000 +0100" stop="20261115130000 +0100" channel="VOOSportWorld1.be">
+    <title lang="fr">Pro League</title><category lang="fr">Football</category>
+  </programme>
+  <programme start="20261201120000 +0100" stop="20261201130000 +0100" channel="TF1.fr">
+    <title lang="fr">Football trop loin</title><category lang="fr">Football</category>
+  </programme>
+</tv>

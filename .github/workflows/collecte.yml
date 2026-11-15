@@ -1,0 +1,29 @@
+name: Mise à jour du programme
+
+on:
+  schedule:
+    - cron: "41 3 * * *"   # 4h41 heure de Paris en hiver (5h41 en été)
+    - cron: "13 15 * * *"  # 16h13 en hiver (17h13 en été), pour les changements de dernière minute
+  workflow_dispatch:         # bouton "Run workflow" pour lancer à la main
+
+permissions:
+  contents: write
+
+jobs:
+  collecte:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Récupérer le programme
+        run: python collector/programme.py
+      - name: Enregistrer les données
+        run: |
+          git config user.name "robot-sport-tv"
+          git config user.email "robot-sport-tv@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "Programme du $(date +%F)"
+          git pull --rebase origin main
+          git push
