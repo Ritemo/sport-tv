@@ -106,7 +106,7 @@ def date_xmltv(txt):
     return int(d.replace(tzinfo=timezone.utc).timestamp()) - minutes * 60
 
 
-CHAINES = set(CONFIG["chaines_tnt"]) | set(CONFIG["chaines_sport"])
+CHAINES = set(CONFIG["chaines_generalistes"]) | set(CONFIG["chaines_sport"])
 
 
 def chaine_exclue(cid):

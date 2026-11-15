@@ -17,7 +17,7 @@ Appli (PWA) sur GitHub Pages : https://ritemo.github.io/sport-tv/
 | Élément | Rôle |
 |---|---|
 | `collector/programme.py` | Le robot. Télécharge le guide (environ 80 Mo), garde le sport, devine la discipline (Football, Rugby, Handball...), repère les directs, rediffusions et magazines |
-| `config.json` | Les réglages : adresses du guide, nombre de jours, chaînes gardées (`chaines_tnt` et `chaines_sport`), écrans de remplissage à écarter (`titres_remplissage`), ordre d'affichage |
+| `config.json` | Les réglages : adresses du guide, nombre de jours, chaînes gardées (`chaines_generalistes`, où seul le sport est gardé, et `chaines_sport`), écrans de remplissage à écarter (`titres_remplissage`), ordre d'affichage |
 | `.github/workflows/collecte.yml` | Lance le robot vers 4h40 et 16h15 (heure d'hiver ; une heure de plus en été) |
 | `.github/workflows/tests.yml` | Vérifie le robot à chaque modification |
 | `index.html`, `sw.js`, `manifest.webmanifest`, `icons/` | L'appli |
@@ -44,7 +44,7 @@ Appli (PWA) sur GitHub Pages : https://ritemo.github.io/sport-tv/
 ## Gestes courants
 
 - **Un sport mal classé** : ajouter le mot clé dans la liste `SPORTS` en haut de `collector/programme.py` (mots en minuscules, sans accents). L'ordre compte : le premier sport trouvé gagne.
-- **Une chaîne manque** : l'ajouter à `chaines_sport` (ou `chaines_tnt`) dans `config.json`, avec son identifiant xmltvfr (exemple : `Eurosport1.fr`).
+- **Une chaîne manque** : l'ajouter à `chaines_sport` (ou `chaines_generalistes`, où seul le sport est gardé,) dans `config.json`, avec son identifiant xmltvfr (exemple : `Eurosport1.fr`).
 - **Un faux programme s'affiche** (écran d'attente, pub maison) : ajouter un morceau de son titre, en minuscules sans accents, à `titres_remplissage`.
 - **Changer l'ordre des chaînes** : `ordre_chaines` dans `config.json`.
 - **Après une modification de l'appli** : changer la version dans `sw.js` (`sport-tv-v1` devient `sport-tv-v2`), sinon les téléphones gardent l'ancienne.
