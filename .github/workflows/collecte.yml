@@ -28,5 +28,5 @@ jobs:
           git config user.email "robot-sport-tv@users.noreply.github.com"
           git add data/
           git diff --cached --quiet || git commit -m "Programme du $(date +%F)"
-          git pull --rebase origin main
-          git push
+          # Jusqu'à 3 essais si quelqu'un d'autre a poussé en même temps
+          for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 10; done
