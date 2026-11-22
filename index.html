@@ -58,13 +58,15 @@ h2::after{content:"";flex:1;height:1px;background:var(--trait)}
 .corps{flex:1;min-width:0}
 .ligneh{display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .h{font-size:19px;font-weight:800;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
-.duree{font-size:12.5px;color:var(--doux);white-space:nowrap}
+.duree{font-size:12.5px;color:var(--doux);white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto}
 .titre{font-weight:700;font-size:16.5px;line-height:1.25}
 .st{color:var(--doux);font-size:14px;margin-top:2px}
 .badges{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
 .badges:empty{display:none}
-.chaine{margin-left:auto;flex:0 1 auto;min-width:0;display:block;font-size:12.5px;font-weight:800;color:#fff;background:var(--vert);border-radius:7px;padding:4px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chaine{margin-left:auto;flex:0 0 auto;max-width:62%;display:block;font-size:12.5px;font-weight:800;color:#fff;background:var(--vert);border-radius:7px;padding:4px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chaine img{width:20px;height:14px;object-fit:contain;vertical-align:-2px;margin-right:4px}
+.plus{font-size:11.5px;font-weight:800;color:var(--vert);background:#e4f0ea;border-radius:7px;padding:4px 6px;margin-left:-4px;white-space:nowrap}
+.aussi{font-size:12.5px;color:var(--doux);margin-top:6px}
 .b-encours{background:var(--citron);color:var(--vert)}
 .b-finit{background:#ece6d6;color:var(--ambre)}
 .b-bientot{background:#e4f0ea;color:var(--vert2)}
@@ -179,6 +181,10 @@ function cleJour(s){ const o = paris(s); return o.year+o.month+o.day; }
 function midiParis(i){ const n = Date.now()/1000, o = paris(n); return n - (+o.hour*3600 + +o.minute*60) + 12*3600 + i*86400; }
 function hhmm(s){ const o = paris(s); return o.hour+":"+o.minute; }
 function jourCourt(s){ const o = paris(s); return o.weekday+" "+(+o.day); }
+// Un programme peut passer sur plusieurs chaînes : principale dans c, les autres dans a
+function toutes(p){ return [p.c].concat(p.a || []); }
+function chainesVisibles(p){ return toutes(p).filter(c => !sansChaines.has(c)); }
+function nomC(c){ return (nomChaine[c] || c).replace(/ Uber Eats/i, ""); }
 function duMin(m){ return m >= 60 ? Math.floor(m/60)+" h "+(m%60 ? String(m%60).padStart(2,"0") : "") : m+" min"; }
 function duree(p){ const m = Math.round((p.f-p.d)/60); return m >= 60 ? Math.floor(m/60)+" h "+(m%60 ? String(m%60).padStart(2,"0") : "") : m+" min"; }
 function norm(t){ return (t||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase(); }
@@ -192,11 +198,11 @@ function filtrer(){
   return D.programmes.filter(p => {
     if (!q && cleJour(p.d) !== cible) return false;
     if (p.f <= maintenant) return false;
-    if (!actifs.has(p.sp) || sansChaines.has(p.c)) return false;
+    if (!actifs.has(p.sp) || !chainesVisibles(p).length) return false;
     if (sportFocus && p.sp !== sportFocus) return false;
     if (opts.ev && !p.ev) return false;
     if (opts.mag && p.mag) return false;
-    if (q && !norm(p.t+" "+(p.st||"")+" "+(p.ds||"")+" "+nomChaine[p.c]).includes(q)) return false;
+    if (q && !norm(p.t+" "+(p.st||"")+" "+(p.ds||"")+" "+toutes(p).map(c => nomChaine[c]).join(" ")).includes(q)) return false;
     return true;
   });
 }
@@ -211,7 +217,8 @@ function carte(p, maintenant){
     + (p.live ? '<span class="badge b-live">Direct</span>' : "")
     + (p.redif ? '<span class="badge b-redif">Rediff</span>' : "")
     + (p.mag ? '<span class="badge b-mag">Magazine</span>' : "");
-  const logo = logoChaine[p.c] ? `<img src="${esc(logoChaine[p.c])}" alt="" loading="lazy" onerror="this.remove()">` : "";
+  const vis = chainesVisibles(p), c0 = vis[0] || p.c, plus = vis.slice(1);
+  const logo = logoChaine[c0] ? `<img src="${esc(logoChaine[p.c])}" alt="" loading="lazy" onerror="this.remove()">` : "";
   const info = texteRech ? jourCourt(p.d)+" · "+duree(p) : duree(p);
   // Frise : début, avancement, fin
   const frise = enCours ? `<div class="frise"><span>${hhmm(p.d)}</span><div class="piste"><div class="rempli" style="width:${pct}%"></div><i style="left:${pct}%"></i></div><span>${hhmm(p.f)}</span></div>
@@ -219,11 +226,12 @@ function carte(p, maintenant){
   return `<button class="prog${enCours ? " encours" : ""}${finit ? " finit" : ""}" style="--c:${COULEUR[p.sp]||"#5f6b65"}" aria-label="${esc(p.sp)}">
     <div class="tuile"><span class="emo">${EMOJI[p.sp]||"🏅"}</span><small>${COURT[p.sp]||""}</small></div>
     <div class="corps">
-      <div class="ligneh"><span class="h">${hhmm(p.d)}</span><span class="duree">${enCours ? "" : info}</span><span class="chaine">${logo}${esc((nomChaine[p.c]||p.c).replace(/ Uber Eats/i, ""))}</span></div>
+      <div class="ligneh"><span class="h">${hhmm(p.d)}</span><span class="duree">${enCours ? "" : info}</span><span class="chaine">${logo}${esc(nomC(c0))}</span>${plus.length ? `<span class="plus">+${plus.length}</span>` : ""}</div>
       <div class="titre">${esc(p.t)}</div>
       ${p.st ? `<div class="st">${esc(p.st)}</div>` : ""}
       ${frise}
       <div class="badges">${badges}</div>
+      ${plus.length ? `<div class="aussi">Aussi sur ${plus.map(c => esc(nomC(c))).join(", ")}</div>` : ""}
       ${p.ds ? `<div class="desc">${esc(p.ds)}</div>` : ""}
     </div>
   </button>`;

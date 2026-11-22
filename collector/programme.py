@@ -244,6 +244,66 @@ def texte(el, balise):
     return (sous.text or "").strip() if sous is not None and sous.text else ""
 
 
+CHAINES_SECONDAIRES = r"Live|UHD|4K|360|Ligue1Plus\d|beINSPORTSMAX|DAZN2|RMCSport[234]"
+
+
+MOTS_VIDES = {"les", "des", "del", "fc", "sc", "ac", "sk", "town", "city"}
+
+
+def mots(txt):
+    txt = sans_accents(txt).replace("ø", "o").replace("æ", "ae").replace("ß", "ss")
+    return {m for m in re.findall(r"[a-z0-9]{3,}", txt) if m not in MOTS_VIDES}
+
+
+def meme_programme(a, b):
+    """Même événement sous deux titres un peu différents ?"""
+    if a["sp"] != b["sp"] or abs(a["d"] - b["d"]) > 20 * 60:
+        return False
+    if re.sub(r"[^a-z0-9]", "", sans_accents(a["t"])) == re.sub(r"[^a-z0-9]", "", sans_accents(b["t"])):
+        return True
+    ea, eb = a["t"].split(" / "), b["t"].split(" / ")
+    if len(ea) == 2 and len(eb) == 2:
+        # Match : chaque équipe doit se retrouver de part et d'autre
+        return all(mots(x) & mots(y) for x, y in zip(ea, eb))
+    if len(ea) == 1 and len(eb) == 1:
+        ma, mb = mots(a["t"]), mots(b["t"])
+        return len(ma) >= 2 and len(mb) >= 2 and (ma <= mb or mb <= ma)
+    return False
+
+
+def fusionner(progs, ordre):
+    """Un même programme diffusé sur plusieurs chaînes (Canal+, Canal+ Foot, Live 1, 4K...)
+    ne donne qu'une ligne : chaîne principale dans "c", les autres dans "a"."""
+    def rang(c):
+        return (1 if re.search(CHAINES_SECONDAIRES, c) else 0, ordre.get(c, 999), c)
+    groupes = []
+    for p in sorted(progs, key=lambda x: x["d"]):
+        g = next((g for g in reversed(groupes[-60:]) if any(meme_programme(q, p) for q in g)), None)
+        if g is None:
+            groupes.append([p])
+        else:
+            g.append(p)
+    sortie = []
+    for g in groupes:
+        g.sort(key=lambda x: rang(x["c"]))
+        p = dict(g[0])
+        autres = []
+        for q in g[1:]:
+            if q["c"] != p["c"] and q["c"] not in autres:
+                autres.append(q["c"])
+            for drapeau in ("live", "ev"):
+                if q.get(drapeau):
+                    p[drapeau] = 1
+            if len(q.get("st", "")) > len(p.get("st", "")):
+                p["st"] = q["st"]
+        if autres:
+            p["a"] = autres
+        sortie.append(p)
+    sortie.sort(key=lambda x: (x["d"], ordre.get(x["c"], 999)))
+    return sortie
+
+
+
 def analyser(flux, maintenant=None, vus=None):
     """Lit le XMLTV en continu (fichier de ~80 Mo) et garde le sport.
 
@@ -314,7 +374,8 @@ def analyser(flux, maintenant=None, vus=None):
         del vus[cle]
     if not CONFIG.get("garder_rediffusions", False):
         progs = [p for p in progs if not p.get("redif")]
-    utilisees = {p["c"] for p in progs}
+    progs = fusionner(progs, ordre)
+    utilisees = {c for p in progs for c in [p["c"]] + p.get("a", [])}
     liste = sorted(utilisees, key=lambda c: (ordre.get(c, 999), chaines[c]["nom"].lower()))
     return {"chaines": [{"id": c, **chaines[c]} for c in liste], "programmes": progs}
 

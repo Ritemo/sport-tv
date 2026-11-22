@@ -83,6 +83,20 @@ class TestRobot(unittest.TestCase):
         self.assertEqual(P.affiche("Football : Ligue 1 | PSG / OM", ""), ("PSG / OM", "Ligue 1"))
         self.assertEqual(P.affiche("Top 14", "Demi-finale"), ("Top 14", "Demi-finale"))
 
+    def test_fusion_doublons(self):
+        base = {"sp": "Football", "f": 2000}
+        progs = [dict(base, c="CanalPlusLive1.fr", d=1000, t="NEC Nimègue / Rennes"),
+                 dict(base, c="CanalPlusFoot.fr", d=1000, t="Nimègue / Rennes"),
+                 dict(base, c="EvenementsSports4KUHD.fr", d=1300, t="NEC Nimegue / Rennes"),
+                 dict(base, c="CanalPlusLive2.fr", d=1000, t="Lyon / Lillestrøm SK"),
+                 dict(base, c="CanalPlusUHD.fr", d=1000, t="Lyon / Lillestrom"),
+                 dict(base, c="CanalPlusLive3.fr", d=1000, t="Sunderland / Tottenham")]
+        res = P.fusionner(progs, {"CanalPlusFoot.fr": 0})
+        self.assertEqual(len(res), 3)
+        nimegue = next(p for p in res if "Rennes" in p["t"])
+        self.assertEqual(nimegue["c"], "CanalPlusFoot.fr")
+        self.assertEqual(sorted(nimegue["a"]), ["CanalPlusLive1.fr", "EvenementsSports4KUHD.fr"])
+
     def test_mot_entier(self):
         self.assertFalse(P.contient("f12 rapport", ["f1"]))
         self.assertTrue(P.contient("gp de f1 a monaco", ["f1"]))
